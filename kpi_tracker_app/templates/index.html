@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vi 4G KPI Failure Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0E1117;
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #FFD700;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #BDC3C7;
+            font-size: 0.9rem;
+        }
+
+        .kpi-table {
+            background: #0D2137;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 28px;
+        }
+
+        .kpi-table h3 {
+            color: #2E75B6;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid #1F4E79;
+            font-size: 0.85rem;
+        }
+
+        .kpi-row:last-child { border-bottom: none; }
+        .kpi-name  { color: #FFFFFF; }
+        .kpi-badge {
+            background: #C00000;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: bold;
+        }
+
+        .upload-area {
+            border: 2px dashed #2E75B6;
+            border-radius: 8px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 16px;
+            background: #0D1117;
+        }
+
+        .upload-area:hover  { border-color: #FFD700; background: #0D2137; }
+        .upload-area.active { border-color: #FFD700; background: #0D2137; }
+
+        .upload-icon  { font-size: 2.8rem; margin-bottom: 12px; }
+        .upload-text  { color: #BDC3C7; font-size: 0.95rem; margin-bottom: 6px; }
+        .upload-sub   { color: #7F8C8D; font-size: 0.8rem; }
+
+        #file-input { display: none; }
+
+        #file-name {
+            color: #70AD47;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+            min-height: 22px;
+            text-align: center;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1F4E79, #2E75B6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:hover    { background: linear-gradient(135deg, #2E75B6, #1F4E79); transform: translateY(-1px); }
+        .btn:disabled { background: #333; cursor: not-allowed; transform: none; color: #888; }
+
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar-bg {
+            background: #0D2137;
+            border-radius: 8px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #1F4E79, #2E75B6, #FFD700);
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            color: #BDC3C7;
+            font-size: 0.82rem;
+            text-align: center;
+        }
+
+        .error-box {
+            background: #2D0000;
+            border: 1px solid #C00000;
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 16px;
+            color: #FF6B6B;
+            font-size: 0.85rem;
+            display: none;
+            text-align: center;
+        }
+
+        .success-box {
+            background: #0D2D0D;
+            border: 1px solid #70AD47;
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 16px;
+            color: #70AD47;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #1F4E79;
+            margin: 24px 0;
+        }
+
+        .footer {
+            text-align: center;
+            color: #555;
+            font-size: 0.75rem;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>📡 Vi 4G KPI Failure Tracker</h1>
+        <p class="subtitle">Upload your raw KPI Excel file — get the failure tracker instantly</p>
+    </div>
+
+    <div class="kpi-table">
+        <h3>KPI Thresholds</h3>
+        <div class="kpi-row">
+            <span class="kpi-name">ERAB Drop Rate</span>
+            <span class="kpi-badge">&gt; 0.5%</span>
+        </div>
+        <div class="kpi-row">
+            <span class="kpi-name">E2E Call Setup SR</span>
+            <span class="kpi-badge">&lt; 99%</span>
+        </div>
+        <div class="kpi-row">
+            <span class="kpi-name">VoLTE CSSR</span>
+            <span class="kpi-badge">&lt; 99%</span>
+        </div>
+        <div class="kpi-row">
+            <span class="kpi-name">Average CQI</span>
+            <span class="kpi-badge">&lt; 7</span>
+        </div>
+        <div class="kpi-row">
+            <span class="kpi-name">Avg DL Throughput</span>
+            <span class="kpi-badge">&lt; 3 Mbps</span>
+        </div>
+    </div>
+
+    <div
+        class="upload-area"
+        id="upload-area"
+        onclick="document.getElementById('file-input').click()"
+    >
+        <div class="upload-icon">📂</div>
+        <p class="upload-text">Click to upload or drag and drop your file</p>
+        <p class="upload-sub">Supports .xlsb and .xlsx — max 500MB</p>
+    </div>
+
+    <input type="file" id="file-input" accept=".xlsb,.xlsx">
+    <div id="file-name"></div>
+
+    <button class="btn" id="process-btn" onclick="processFile()" disabled>
+        🚀 Generate KPI Failure Tracker
+    </button>
+
+    <div class="progress-container" id="progress-container">
+        <div class="progress-bar-bg">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="progress-text" id="progress-text">Processing...</p>
+    </div>
+
+    <div class="error-box"   id="error-box"></div>
+    <div class="success-box" id="success-box"></div>
+
+    <hr class="divider">
+    <p class="footer">Vi Punjab 4G Network Intelligence · Nokia KPI Data</p>
+
+</div>
+
+<script>
+    let selectedFile = null;
+
+    // File input change
+    document.getElementById("file-input").addEventListener("change", function(e) {
+        selectedFile = e.target.files[0];
+        if (selectedFile) {
+            const sizeMB = (selectedFile.size / 1024 / 1024).toFixed(1);
+            document.getElementById("file-name").textContent =
+                `✅ ${selectedFile.name}  (${sizeMB} MB)`;
+            document.getElementById("process-btn").disabled = false;
+            resetStatus();
+        }
+    });
+
+    // Drag and drop
+    const uploadArea = document.getElementById("upload-area");
+
+    uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("active");
+    });
+    uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("active");
+    });
+    uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("active");
+        const file = e.dataTransfer.files[0];
+        if (file && (file.name.endsWith(".xlsb") || file.name.endsWith(".xlsx"))) {
+            selectedFile = file;
+            const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+            document.getElementById("file-name").textContent =
+                `✅ ${file.name}  (${sizeMB} MB)`;
+            document.getElementById("process-btn").disabled = false;
+            resetStatus();
+        } else {
+            showError("Please upload a .xlsb or .xlsx file");
+        }
+    });
+
+    function resetStatus() {
+        document.getElementById("error-box").style.display   = "none";
+        document.getElementById("success-box").style.display = "none";
+        document.getElementById("progress-container").style.display = "none";
+    }
+
+    function showError(msg) {
+        const box = document.getElementById("error-box");
+        box.textContent = "❌ " + msg;
+        box.style.display = "block";
+        document.getElementById("success-box").style.display = "none";
+        document.getElementById("process-btn").disabled = false;
+    }
+
+    function showSuccess(msg) {
+        const box = document.getElementById("success-box");
+        box.textContent = msg;
+        box.style.display = "block";
+        document.getElementById("error-box").style.display = "none";
+    }
+
+    function setProgress(pct, text) {
+        document.getElementById("progress-bar").style.width = pct + "%";
+        document.getElementById("progress-text").textContent = text;
+    }
+
+    async function processFile() {
+        if (!selectedFile) return;
+
+        // Reset UI
+        resetStatus();
+        document.getElementById("progress-container").style.display = "block";
+        document.getElementById("process-btn").disabled = true;
+
+        setProgress(10, "Uploading file...");
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            // Submit job
+            const response = await fetch("/process", {
+                method: "POST",
+                body  : formData,
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                showError(err.error || "Upload failed");
+                return;
+            }
+
+            const data   = await response.json();
+            const job_id = data.job_id;
+
+            setProgress(25, "Processing KPI data — please wait...");
+
+            // Poll every 5 seconds
+            let attempts    = 0;
+            const maxAttempts = 72;   // 6 mins max
+
+            const poll = setInterval(async () => {
+                attempts++;
+
+                if (attempts > maxAttempts) {
+                    clearInterval(poll);
+                    showError("Processing timed out — try a smaller file");
+                    return;
+                }
+
+                try {
+                    const statusRes  = await fetch(`/status/${job_id}`);
+                    const statusData = await statusRes.json();
+
+                    const pct = Math.min(25 + (attempts / maxAttempts) * 65, 90);
+                    setProgress(
+                        pct,
+                        `Processing sheet data... (${attempts * 5}s elapsed)`
+                    );
+
+                    if (statusData.status === "done") {
+                        clearInterval(poll);
+                        setProgress(95, "Preparing download...");
+
+                        // Download file
+                        const dlRes = await fetch(`/download/${job_id}`);
+                        if (!dlRes.ok) {
+                            showError("Download failed — please try again");
+                            return;
+                        }
+
+                        const blob = await dlRes.blob();
+                        const url  = window.URL.createObjectURL(blob);
+                        const a    = document.createElement("a");
+                        a.href     = url;
+                        a.download = "KPI_Failure_Tracker.xlsx";
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+
+                        setProgress(100, "Done!");
+                        showSuccess(
+                            "✅ KPI_Failure_Tracker.xlsx downloaded successfully!"
+                        );
+                        document.getElementById("process-btn").disabled = false;
+
+                    } else if (statusData.status === "error") {
+                        clearInterval(poll);
+                        showError(statusData.error || "Processing failed");
+                    }
+
+                } catch (pollErr) {
+                    clearInterval(poll);
+                    showError("Connection lost during processing");
+                }
+
+            }, 5000);
+
+        } catch (err) {
+            showError("Network error: " + err.message);
+        }
+    }
+</script>
+</body>
+</html>

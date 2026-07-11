@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: kpi-tracker
+    runtime: docker
+    plan: free
+    envVars:
+      - key: FLASK_ENV
+        value: production

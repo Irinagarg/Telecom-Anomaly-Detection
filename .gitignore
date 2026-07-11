@@ -1,0 +1,28 @@
+﻿# Data files — too large for GitHub
+data/
+*.xlsb
+*.xlsx
+*.csv
+*.parquet
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Outputs
+outputs/
+
+# Models
+models/
+
+notebooks/11_RAG_Network_Assistant.ipynb
