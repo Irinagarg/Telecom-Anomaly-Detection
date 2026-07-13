@@ -28,3 +28,10 @@ docker run -p 5000:5000 kpi-tracker
 ## Tech Stack
 Python, scikit-learn, pandas, Flask, Docker, FAISS,
 sentence-transformers, Groq API, openpyxl, statsmodels
+# 4G Network Intelligence System
+### Vodafone Idea (Vi) — Punjab Region | Nokia 4G KPI Analysis
+
+## 🚀 Live Demo
+👉 **[Launch KPI Failure Tracker](https://telecom-anomaly-detection.onrender.com)**
+
+> First load may take 30 seconds if server is waking up
