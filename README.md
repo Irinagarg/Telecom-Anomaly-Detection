@@ -1,5 +1,5 @@
 ﻿# 4G Network Intelligence System
-Vodafone Idea (Vi) — Punjab Region | Nokia 4G KPI Analysis
+Vodafone Idea (Vi) — Haryana Region | Nokia 4G KPI Analysis
 
 ## Project Overview
 End-to-end ML pipeline for anomaly detection, health scoring,
@@ -29,7 +29,7 @@ docker run -p 5000:5000 kpi-tracker
 Python, scikit-learn, pandas, Flask, Docker, FAISS,
 sentence-transformers, Groq API, openpyxl, statsmodels
 # 4G Network Intelligence System
-### Vodafone Idea (Vi) — Punjab Region | Nokia 4G KPI Analysis
+### Vodafone Idea (Vi) — Haryana Region | Nokia 4G KPI Analysis
 
 ## 🚀 Live Demo
 👉 **[Launch KPI Failure Tracker](https://telecom-anomaly-detection.onrender.com)**
