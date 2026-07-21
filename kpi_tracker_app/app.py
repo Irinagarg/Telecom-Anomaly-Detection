@@ -48,8 +48,14 @@ KPI_CONFIG = [
         "direction": "low",
         "threshold": 3.0,
     },
+    # ── NEW KPI ──
+    {
+        "col"      : "VoLTE Drop Call Rate_Nokia_VeMr",
+        "label"    : "VoLTE DCR",
+        "direction": "high",    # bad when HIGH
+        "threshold": 0.5,
+    },
 ]
-
 CELL_COL = "CO_DN"
 
 # ── Styles ──
